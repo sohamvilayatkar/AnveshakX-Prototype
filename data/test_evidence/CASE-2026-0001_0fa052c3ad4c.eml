@@ -1,0 +1,32 @@
+Received: from mail-relay.acmecorp.com (mail-relay.acmecorp.com [198.51.100.25])
+	by mx.enterprise-receiver.net (Postfix) with ESMTPS id 4VzL9m2K8nz12
+	for <employee@enterprise-receiver.net>; Tue, 15 Aug 2026 10:14:22 +0000 (UTC)
+Received: from internal-mailer.corp.acme.local (internal-mailer.corp.acme.local [10.0.4.12])
+	by mail-relay.acmecorp.com (Postfix) with ESMTP id 3XkP7m1J5lz99
+	for <employee@enterprise-receiver.net>; Tue, 15 Aug 2026 10:14:20 +0000 (UTC)
+Authentication-Results: mx.enterprise-receiver.net;
+	dkim=pass header.i=@acmecorp.com header.s=202601;
+	spf=pass (mx.enterprise-receiver.net: domain of sender@acmecorp.com designates 198.51.100.25 as permitted sender) smtp.mailfrom=sender@acmecorp.com;
+	dmarc=pass (p=REJECT sp=REJECT) header.from=acmecorp.com
+Received-SPF: pass (mx.enterprise-receiver.net: domain of sender@acmecorp.com designates 198.51.100.25 as permitted sender) client-ip=198.51.100.25;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acmecorp.com; s=202601;
+	h=from:to:subject:date:message-id:mime-version:content-type;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=dGVzdF9ka2ltX3NpZ25hdHVyZV9leGFtcGxlX3ZhbGlkXzIwMjY=
+From: "Alice Roberts" <alice@acmecorp.com>
+To: "Bob Developer" <employee@enterprise-receiver.net>
+Subject: Project AnveshakX Sprint Planning Review
+Date: Tue, 15 Aug 2026 10:14:18 +0000
+Message-ID: <CAB2026-0815-101418-XYZ@acmecorp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+Hi Bob,
+
+Here is the agenda for our upcoming quarterly sprint planning meeting.
+Please review the internal project documentation on https://portal.acmecorp.com/wiki/sprint-4.
+
+Best regards,
+Alice Roberts
+Engineering Lead, Acme Corp
