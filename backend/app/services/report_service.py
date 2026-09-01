@@ -1,28 +1,26 @@
-import os
-from io import BytesIO
+import io
 from datetime import datetime, timezone
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
-from reportlab.lib.units import inch
-from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable
-)
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
+)
 
 from app.schemas.analysis import AnalysisResponse
 
 
 class ReportService:
     """
-    Forensic PDF Report Generator:
-    Compiles an official digital forensics investigation report using ReportLab,
-    with forensic hashes, relay chronology, IOC lists, and legal disclaimers.
+    Forensic Report Generator:
+    Compiles full evidence, Phase 1 technical indicators, Phase 2 AI/ML detections,
+    social engineering dimensions, and risk fusion into an official PDF investigation report.
     """
 
     @classmethod
     def generate_pdf(cls, analysis: AnalysisResponse) -> bytes:
-        buffer = BytesIO()
+        buffer = io.BytesIO()
         doc = SimpleDocTemplate(
             buffer,
             pagesize=letter,
@@ -33,48 +31,47 @@ class ReportService:
         )
 
         styles = getSampleStyleSheet()
-        
-        # Custom Forensic Styles
+
+        # Custom Styles
         title_style = ParagraphStyle(
             "DocTitle",
             parent=styles["Heading1"],
-            fontSize=20,
-            leading=24,
+            fontSize=16,
+            leading=20,
             textColor=colors.HexColor("#0f172a"),
-            alignment=TA_LEFT,
             fontName="Helvetica-Bold"
         )
         subtitle_style = ParagraphStyle(
             "DocSubTitle",
             parent=styles["Normal"],
-            fontSize=10,
-            leading=14,
+            fontSize=8,
+            leading=11,
             textColor=colors.HexColor("#64748b"),
             fontName="Helvetica"
         )
         section_style = ParagraphStyle(
-            "SectionHeader",
+            "SectionHeading",
             parent=styles["Heading2"],
-            fontSize=12,
-            leading=16,
+            fontSize=11,
+            leading=14,
             textColor=colors.HexColor("#1e293b"),
             fontName="Helvetica-Bold",
-            spaceBefore=10,
-            spaceAfter=4
+            spaceBefore=8,
+            spaceAfter=3
         )
         body_style = ParagraphStyle(
             "BodyTextCustom",
             parent=styles["Normal"],
-            fontSize=9,
-            leading=13,
+            fontSize=8.5,
+            leading=12,
             textColor=colors.HexColor("#334155"),
             fontName="Helvetica"
         )
         disclaimer_style = ParagraphStyle(
             "DisclaimerText",
             parent=styles["Normal"],
-            fontSize=7.5,
-            leading=10,
+            fontSize=7,
+            leading=9.5,
             textColor=colors.HexColor("#94a3b8"),
             fontName="Helvetica-Oblique",
             alignment=TA_CENTER
@@ -85,8 +82,8 @@ class ReportService:
         # 1. Header Banner
         header_data = [
             [
-                Paragraph("<b>ANVESHAKX FORENSIC INTELLIGENCE REPORT</b>", title_style),
-                Paragraph(f"<b>STATUS:</b> OFFICIAL EVIDENCE<br/><b>GENERATED:</b> {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}", subtitle_style)
+                Paragraph("<b>ANVESHAKX FORENSIC & AI INTELLIGENCE REPORT</b>", title_style),
+                Paragraph(f"<b>STATUS:</b> OFFICIAL FORENSIC RECORD<br/><b>GENERATED:</b> {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}", subtitle_style)
             ]
         ]
         header_table = Table(header_data, colWidths=[340, 200])
@@ -95,15 +92,15 @@ class ReportService:
             ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
         ]))
         elements.append(header_table)
-        elements.append(Spacer(1, 8))
-        elements.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor("#0284c7"), spaceAfter=12))
+        elements.append(Spacer(1, 4))
+        elements.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor("#0284c7"), spaceAfter=8))
 
         # 2. Case Information Summary Box
         case = analysis.case
         evidence = analysis.evidence
         case_info_data = [
             [Paragraph("<b>Case ID:</b>", body_style), Paragraph(case.id, body_style), Paragraph("<b>Original File:</b>", body_style), Paragraph(case.filename, body_style)],
-            [Paragraph("<b>Evidence SHA-256:</b>", body_style), Paragraph(f"<font size=7 fontName='Courier'>{evidence.sha256_hash}</font>", body_style), Paragraph("<b>File Size:</b>", body_style), Paragraph(f"{case.file_size_bytes} bytes", body_style)],
+            [Paragraph("<b>Evidence SHA-256:</b>", body_style), Paragraph(f"<font size=6.5 fontName='Courier'>{evidence.sha256_hash}</font>", body_style), Paragraph("<b>File Size:</b>", body_style), Paragraph(f"{case.file_size_bytes} bytes", body_style)],
             [Paragraph("<b>Integrity Status:</b>", body_style), Paragraph("<font color='#16a34a'><b>VERIFIED IMMUTABLE</b></font>", body_style), Paragraph("<b>Evidence ID:</b>", body_style), Paragraph(evidence.evidence_id, body_style)],
         ]
         case_table = Table(case_info_data, colWidths=[90, 200, 80, 170])
@@ -112,36 +109,80 @@ class ReportService:
             ('BOX', (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e1")),
             ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('PADDING', (0, 0), (-1, -1), 5),
+            ('PADDING', (0, 0), (-1, -1), 4),
         ]))
         elements.append(case_table)
-        elements.append(Spacer(1, 12))
+        elements.append(Spacer(1, 8))
 
-        # 3. Threat Assessment Scorecard
+        # 3. Threat Assessment & Risk Fusion Scorecard
         threat = analysis.threat
+        fusion = analysis.risk_fusion
+        ml = analysis.ml_analysis
+        soc = analysis.social_engineering
+
         sev_color = "#dc2626" if threat.severity == "CRITICAL" else ("#ea580c" if threat.severity == "HIGH" else ("#d97706" if threat.severity == "MEDIUM" else "#16a34a"))
         
+        fusion_summary = f"Forensic ({fusion.forensic_score} × {fusion.forensic_weight}) + ML ({fusion.ml_score} × {fusion.ml_weight}) + Intel ({fusion.intel_score} × {fusion.intel_weight}) = <b>{threat.score}</b>"
+
         threat_data = [
             [
-                Paragraph(f"<font size=24 color='{sev_color}'><b>{threat.score} / 100</b></font><br/><font size=10 color='{sev_color}'><b>{threat.severity} RISK</b></font>", ParagraphStyle("Score", alignment=TA_CENTER)),
-                Paragraph(f"<b>Classification:</b> {threat.classification}<br/>"
-                          f"<b>Confidence:</b> {int(threat.confidence * 100)}% (Deterministic Forensic Rules)<br/>"
-                          f"<b>Forensic Summary:</b> {threat.summary}", body_style)
+                Paragraph(f"<font size=20 color='{sev_color}'><b>{threat.score} / 100</b></font><br/><font size=9 color='{sev_color}'><b>{threat.severity} RISK</b></font>", ParagraphStyle("Score", alignment=TA_CENTER)),
+                Paragraph(f"<b>Unified Classification:</b> {threat.classification}<br/>"
+                          f"<b>Risk Fusion:</b> {fusion_summary}<br/>"
+                          f"<b>Confidence:</b> {int(threat.confidence * 100)}% (Multi-Layer Corroboration)<br/>"
+                          f"<b>Executive Summary:</b> {threat.summary}", body_style)
             ]
         ]
-        threat_table = Table(threat_data, colWidths=[140, 400])
+        threat_table = Table(threat_data, colWidths=[130, 410])
         threat_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#f1f5f9")),
             ('BOX', (0, 0), (-1, -1), 1.5, colors.HexColor(sev_color)),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('PADDING', (0, 0), (-1, -1), 8),
+            ('PADDING', (0, 0), (-1, -1), 6),
         ]))
-        elements.append(Paragraph("1. Executive Threat Assessment", section_style))
+        elements.append(Paragraph("1. Executive Risk Fusion Assessment", section_style))
         elements.append(threat_table)
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 8))
 
-        # 4. Identity & Authentication Findings
-        elements.append(Paragraph("2. Sender Identity & Authentication Verification", section_style))
+        # 4. Phase 2 AI/ML & Social Engineering Analysis Box
+        elements.append(Paragraph("2. Machine Learning & Behavioral Threat Analysis", section_style))
+        ml_data = [
+            [
+                Paragraph("<b>ML Model Name / Version:</b>", body_style),
+                Paragraph(f"{ml.model_name} ({ml.model_version})", body_style),
+                Paragraph("<b>AI Prediction:</b>", body_style),
+                Paragraph(f"<b>{ml.classification}</b> ({int(ml.confidence * 100)}% Conf)", body_style)
+            ],
+            [
+                Paragraph("<b>Social Engineering Urgency:</b>", body_style),
+                Paragraph(f"<font color='{'#dc2626' if soc.urgency > 0.7 else '#334155'}'><b>{int(soc.urgency * 100)}%</b></font>", body_style),
+                Paragraph("<b>Financial Pressure:</b>", body_style),
+                Paragraph(f"<font color='{'#dc2626' if soc.financial_pressure > 0.7 else '#334155'}'><b>{int(soc.financial_pressure * 100)}%</b></font>", body_style)
+            ],
+            [
+                Paragraph("<b>Authority Impersonation:</b>", body_style),
+                Paragraph(f"{int(soc.authority * 100)}%", body_style),
+                Paragraph("<b>Secrecy / Isolation:</b>", body_style),
+                Paragraph(f"{int(soc.secrecy * 100)}%", body_style)
+            ],
+            [
+                Paragraph("<b>Anomaly Detector:</b>", body_style),
+                Paragraph(f"{analysis.anomaly_detection.explanation}", body_style),
+                Paragraph("<b>Linguistic Signals:</b>", body_style),
+                Paragraph(", ".join([s.token for s in ml.linguistic_signals[:4]]) or "None", body_style)
+            ]
+        ]
+        ml_table = Table(ml_data, colWidths=[140, 150, 110, 140])
+        ml_table.setStyle(TableStyle([
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#f8fafc")),
+            ('PADDING', (0, 0), (-1, -1), 4),
+        ]))
+        elements.append(ml_table)
+        elements.append(Spacer(1, 8))
+
+        # 5. Identity & Authentication Findings
+        elements.append(Paragraph("3. Sender Identity & Authentication Verification", section_style))
         email = analysis.email
         auth = analysis.authentication
         
@@ -149,21 +190,21 @@ class ReportService:
             [Paragraph("<b>Claimed Sender:</b>", body_style), Paragraph(f"{email.sender.display_name} &lt;{email.sender.email}&gt;", body_style)],
             [Paragraph("<b>Reply-To Destination:</b>", body_style), Paragraph(f"{email.reply_to.email if email.reply_to else 'None (Same as Sender)'}", body_style)],
             [Paragraph("<b>Return-Path:</b>", body_style), Paragraph(f"{email.return_path.email if email.return_path else 'None'}", body_style)],
-            [Paragraph("<b>SPF Result:</b>", body_style), Paragraph(f"<b>{auth.spf_result}</b> ({auth.spf_details or 'Reported in headers'})", body_style)],
-            [Paragraph("<b>DKIM Result:</b>", body_style), Paragraph(f"<b>{auth.dkim_result}</b> ({auth.dkim_details or 'Reported in headers'})", body_style)],
-            [Paragraph("<b>DMARC Result:</b>", body_style), Paragraph(f"<b>{auth.dmarc_result}</b> ({auth.dmarc_details or 'Reported in headers'})", body_style)],
+            [Paragraph("<b>SPF Check:</b>", body_style), Paragraph(f"<b>{auth.spf_result}</b> ({auth.spf_details or 'Verified'})", body_style)],
+            [Paragraph("<b>DKIM Signature:</b>", body_style), Paragraph(f"<b>{auth.dkim_result}</b> ({auth.dkim_details or 'Verified'})", body_style)],
+            [Paragraph("<b>DMARC Alignment:</b>", body_style), Paragraph(f"<b>{auth.dmarc_result}</b> ({auth.dmarc_details or 'Verified'})", body_style)],
         ]
-        id_table = Table(id_data, colWidths=[140, 400])
+        id_table = Table(id_data, colWidths=[130, 410])
         id_table.setStyle(TableStyle([
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
             ('BACKGROUND', (0, 0), (0, -1), colors.HexColor("#f8fafc")),
-            ('PADDING', (0, 0), (-1, -1), 4),
+            ('PADDING', (0, 0), (-1, -1), 3.5),
         ]))
         elements.append(id_table)
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 8))
 
-        # 5. Received Relay Chronology
-        elements.append(Paragraph("3. Email Transmission Relay Path (MTA Chronology)", section_style))
+        # 6. Received Relay Chronology
+        elements.append(Paragraph("4. Email Transmission Relay Path (MTA Chronology)", section_style))
         relay_data = [["Hop", "From Host / IP", "By Host / MTA", "Protocol", "Timestamp"]]
         for hop in analysis.relay_path:
             relay_data.append([
@@ -183,19 +224,19 @@ class ReportService:
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 8),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-            ('FONTSIZE', (0, 1), (-1, -1), 7.5),
-            ('PADDING', (0, 0), (-1, -1), 3.5),
+            ('FONTSIZE', (0, 1), (-1, -1), 7),
+            ('PADDING', (0, 0), (-1, -1), 3),
         ]))
         elements.append(relay_table)
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 8))
 
-        # 6. Indicators of Compromise (IOCs) Table
-        elements.append(Paragraph("4. Preserved Indicators of Compromise (IOC Table)", section_style))
+        # 7. Indicators of Compromise (IOCs) Table
+        elements.append(Paragraph("5. Preserved Indicators of Compromise (IOC Table)", section_style))
         ioc_data = [["Type", "Value", "Source Context", "Risk Rating"]]
-        for ioc in analysis.iocs[:12]:  # Top 12 IOCs for report brevity
+        for ioc in analysis.iocs[:8]:
             ioc_data.append([
                 ioc.ioc_type,
-                Paragraph(f"<font size=7 fontName='Courier'>{ioc.value[:45] + '...' if len(ioc.value) > 45 else ioc.value}</font>", body_style),
+                Paragraph(f"<font size=6.5 fontName='Courier'>{ioc.value[:45] + '...' if len(ioc.value) > 45 else ioc.value}</font>", body_style),
                 ioc.source,
                 ioc.risk
             ])
@@ -209,18 +250,18 @@ class ReportService:
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 8),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-            ('FONTSIZE', (0, 1), (-1, -1), 7.5),
-            ('PADDING', (0, 0), (-1, -1), 3),
+            ('FONTSIZE', (0, 1), (-1, -1), 7),
+            ('PADDING', (0, 0), (-1, -1), 2.5),
         ]))
         elements.append(ioc_table)
-        elements.append(Spacer(1, 14))
+        elements.append(Spacer(1, 10))
 
-        # 7. Forensic Disclaimer & Footer
-        elements.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#cbd5e1"), spaceAfter=8))
+        # 8. Forensic & AI Limitations Notice
+        elements.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#cbd5e1"), spaceAfter=6))
         disclaimer_text = (
-            "LEGAL FORENSIC NOTICE & DISCLAIMER: Geolocation, WHOIS, and network intelligence represent probable Mail "
-            "Transfer Agent (MTA) and hosting infrastructure. They do not establish the physical identity or real-time location "
-            "of an individual perpetrator. Evidence preserved with SHA-256 immutable checksums."
+            "LEGAL & SCIENTIFIC NOTICE: Machine learning classifications and behavioral scores are decision-support signals "
+            "and should be validated by qualified cyber forensics examiners. Geolocation and IP intelligence represent "
+            "network routing infrastructure and do not attribute physical personal identity. Evidence preserved with SHA-256."
         )
         elements.append(Paragraph(disclaimer_text, disclaimer_style))
 

@@ -91,7 +91,7 @@ class GraphEdge(BaseModel):
     source: str
     target: str
     label: Optional[str] = None
-    type: str = "default"  # SENT_BY, REPLIED_TO, ROUTED_THROUGH, RESOLVES_TO, HOSTED_ON, LINKS_TO, CONTAINS
+    type: str = "default"
 
 
 class ForensicGraph(BaseModel):
@@ -109,6 +109,70 @@ class EvidencePreservation(BaseModel):
     preservation_timestamp: str
     integrity_verified: bool = True
     storage_path: Optional[str] = None
+
+
+class LinguisticSignal(BaseModel):
+    token: str
+    weight: float
+    description: str
+
+
+class MLAnalysisData(BaseModel):
+    model_name: str = "anveshakx-email-classifier"
+    model_version: str = "v2.0"
+    classification: str = "UNCLASSIFIED"
+    raw_class: str = "legitimate"
+    confidence: float = 0.50
+    probabilities: Dict[str, float] = Field(default_factory=dict)
+    linguistic_signals: List[LinguisticSignal] = Field(default_factory=list)
+    status: str = "active"
+
+
+class SocialEngineeringProfile(BaseModel):
+    urgency: float = 0.0
+    authority: float = 0.0
+    financial_pressure: float = 0.0
+    fear: float = 0.0
+    secrecy: float = 0.0
+    credential_request: float = 0.0
+    call_to_action: float = 0.0
+
+
+class EvidenceItem(BaseModel):
+    title: str
+    severity: str
+    points: int = 0
+    explanation: str
+
+
+class RiskFusionBreakdown(BaseModel):
+    forensic_score: int = 0
+    forensic_weight: float = 0.50
+    ml_score: int = 0
+    ml_weight: float = 0.30
+    intel_score: int = 0
+    intel_weight: float = 0.20
+    final_score: int = 0
+    formula: str = ""
+    technical_evidence: List[EvidenceItem] = Field(default_factory=list)
+    ai_evidence: List[EvidenceItem] = Field(default_factory=list)
+    intel_evidence: List[EvidenceItem] = Field(default_factory=list)
+    top_factors: List[str] = Field(default_factory=list)
+
+
+class AnomalyResult(BaseModel):
+    is_anomaly: bool = False
+    anomaly_score: float = 0.0
+    explanation: str = ""
+
+
+class CampaignMatch(BaseModel):
+    campaign_id: str
+    campaign_name: str
+    type: str = "KNOWN_CAMPAIGN"
+    similarity_score: float
+    similarity_percent: int
+    shared_traits: List[str] = Field(default_factory=list)
 
 
 class ParsedEmailData(BaseModel):
@@ -149,3 +213,10 @@ class AnalysisResponse(BaseModel):
     timeline: List[TimelineEvent] = Field(default_factory=list)
     graph: ForensicGraph = Field(default_factory=ForensicGraph)
     evidence: EvidencePreservation
+    
+    # Phase 2 ML Intelligence Additions
+    ml_analysis: MLAnalysisData = Field(default_factory=MLAnalysisData)
+    social_engineering: SocialEngineeringProfile = Field(default_factory=SocialEngineeringProfile)
+    risk_fusion: RiskFusionBreakdown = Field(default_factory=RiskFusionBreakdown)
+    anomaly_detection: AnomalyResult = Field(default_factory=AnomalyResult)
+    campaign_matches: List[CampaignMatch] = Field(default_factory=list)

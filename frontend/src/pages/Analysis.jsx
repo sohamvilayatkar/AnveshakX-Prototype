@@ -3,13 +3,18 @@ import { useSearchParams, Link } from 'react-router-dom';
 import {
   ShieldAlert, ShieldCheck, AlertTriangle, Globe, Server, Link2, Paperclip,
   Activity, Clock, GitFork, KeyRound, Download, Copy, Check, FileText,
-  HelpCircle, Eye, ArrowRight, ArrowDown, ChevronRight, Hash, Terminal
+  HelpCircle, Eye, ArrowRight, ArrowDown, ChevronRight, Hash, Terminal,
+  Cpu, Target, Layers, Sparkles
 } from 'lucide-react';
 import api from '../services/api';
 import SeverityBadge from '../components/common/SeverityBadge';
 import AuthBadge from '../components/common/AuthBadge';
 import AttackGraph from '../components/graph/AttackGraph';
 import GeoMap from '../components/map/GeoMap';
+import WhyFlaggedCard from '../components/analysis/WhyFlaggedCard';
+import RiskFusionCard from '../components/analysis/RiskFusionCard';
+import AIAnalysisTab from '../components/analysis/AIAnalysisTab';
+import CampaignSimilarityTab from '../components/analysis/CampaignSimilarityTab';
 
 export const Analysis = () => {
   const [searchParams] = useSearchParams();
@@ -68,7 +73,7 @@ export const Analysis = () => {
       <div className="h-[70vh] flex flex-col items-center justify-center space-y-4">
         <div className="h-10 w-10 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
         <p className="font-mono text-xs text-soc-muted animate-pulse">
-          Correlating headers, relay path, IOCs, and explainable threat scoring...
+          Correlating headers, AI language models, relay path, and multi-layer risk fusion...
         </p>
       </div>
     );
@@ -90,10 +95,33 @@ export const Analysis = () => {
     );
   }
 
-  const { case: caseData, email, threat, authentication, header_findings, relay_path, ips, domains, urls, attachments, iocs, risk_factors, timeline, graph, evidence } = analysis;
+  const {
+    case: caseData,
+    email,
+    threat,
+    authentication,
+    header_findings,
+    relay_path,
+    ips,
+    domains,
+    urls,
+    attachments,
+    iocs,
+    risk_factors,
+    timeline,
+    graph,
+    evidence,
+    ml_analysis,
+    social_engineering,
+    risk_fusion,
+    anomaly_detection,
+    campaign_matches
+  } = analysis;
 
   const tabs = [
     { id: 'overview', label: 'Threat Overview', icon: Activity },
+    { id: 'ai_analysis', label: 'AI Threat Intelligence', icon: Cpu, count: ml_analysis?.linguistic_signals?.length },
+    { id: 'campaigns', label: 'Campaign Similarity', icon: Target, count: campaign_matches?.length },
     { id: 'headers', label: 'Header Forensics', icon: FileText, count: header_findings.length },
     { id: 'auth', label: 'Authentication', icon: ShieldCheck },
     { id: 'relay', label: 'Relay Path', icon: GitFork, count: relay_path.length },
@@ -119,6 +147,9 @@ export const Analysis = () => {
               <SeverityBadge severity={threat.severity} />
               <span className="text-xs font-mono px-2 py-0.5 rounded bg-black/40 border border-soc-border text-cyan-400">
                 {threat.classification}
+              </span>
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300">
+                AI Confidence: {Math.round((ml_analysis?.confidence || 0.85) * 100)}%
               </span>
             </div>
             <p className="text-xs font-mono text-soc-muted truncate max-w-xl">
@@ -189,7 +220,7 @@ export const Analysis = () => {
             >
               <Icon className="h-3.5 w-3.5" />
               <span>{t.label}</span>
-              {t.count !== undefined && (
+              {t.count !== undefined && t.count > 0 && (
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-cyan-500/20 text-cyan-200' : 'bg-slate-800 text-soc-muted'}`}>
                   {t.count}
                 </span>
@@ -202,16 +233,22 @@ export const Analysis = () => {
       {/* TAB CONTENT: Overview */}
       {activeTab === 'overview' && (
         <div className="space-y-6">
+          {/* Tri-Layer Risk Fusion Banner */}
+          <RiskFusionCard riskFusion={risk_fusion} threat={threat} />
+
+          {/* Master "Why Was This Flagged?" Triage Card */}
+          <WhyFlaggedCard riskFusion={risk_fusion} />
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Scorecard */}
-            <div className="rounded-xl border border-soc-border bg-soc-card p-6 flex flex-col items-center justify-center text-center space-y-4">
+            <div className="rounded-xl border border-soc-border bg-soc-card p-6 flex flex-col items-center justify-center text-center space-y-4 font-mono">
               <div className={`relative h-32 w-32 rounded-full border-4 flex flex-col items-center justify-center ${scoreColor} shadow-[0_0_20px_rgba(0,0,0,0.5)]`}>
-                <span className="text-3xl font-bold font-mono text-white">{threat.score}</span>
-                <span className="text-[10px] font-mono text-soc-muted">/ 100</span>
+                <span className="text-3xl font-bold text-white">{threat.score}</span>
+                <span className="text-[10px] text-soc-muted">/ 100</span>
               </div>
               <div className="space-y-1">
                 <SeverityBadge severity={threat.severity} />
-                <h3 className="font-mono font-bold text-sm text-white pt-2">{threat.classification}</h3>
+                <h3 className="font-bold text-sm text-white pt-2">{threat.classification}</h3>
                 <p className="text-xs text-soc-muted max-w-xs">{threat.summary}</p>
               </div>
             </div>
@@ -260,35 +297,21 @@ export const Analysis = () => {
               </div>
             </div>
           </div>
-
-          {/* Risk Factors List */}
-          <div className="rounded-xl border border-soc-border bg-soc-card p-5 space-y-4">
-            <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-white flex items-center gap-2">
-              <ShieldAlert className="h-4 w-4 text-cyan-400" />
-              Explainable Risk Factors Breakdown
-            </h3>
-            <div className="divide-y divide-soc-border">
-              {risk_factors.length === 0 ? (
-                <p className="text-xs font-mono text-soc-muted py-4">No risk triggers identified. Communication appears legitimate.</p>
-              ) : (
-                risk_factors.map((factor, idx) => (
-                  <div key={idx} className="py-3 flex items-start justify-between gap-4 font-mono">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-xs text-white">{factor.name}</span>
-                        <SeverityBadge severity={factor.severity} size="sm" />
-                      </div>
-                      <p className="text-xs text-soc-muted">{factor.explanation}</p>
-                    </div>
-                    <span className="text-xs font-bold text-cyan-400 shrink-0 px-2 py-1 rounded bg-cyan-500/10 border border-cyan-500/20">
-                      +{factor.points} pts
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
         </div>
+      )}
+
+      {/* TAB CONTENT: AI Threat Intelligence */}
+      {activeTab === 'ai_analysis' && (
+        <AIAnalysisTab
+          mlAnalysis={ml_analysis}
+          socialEngineering={social_engineering}
+          anomalyDetection={anomaly_detection}
+        />
+      )}
+
+      {/* TAB CONTENT: Campaign Similarity */}
+      {activeTab === 'campaigns' && (
+        <CampaignSimilarityTab campaignMatches={campaign_matches} />
       )}
 
       {/* TAB CONTENT: Header Forensics */}

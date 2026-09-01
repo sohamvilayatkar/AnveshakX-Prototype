@@ -15,11 +15,17 @@ from app.utils.validators import validate_email_file
 from app.services import (
     EmailParser, HeaderAnalyzer, AuthenticationAnalyzer, RelayAnalyzer,
     IPIntelligenceService, DomainAnalyzer, IndicatorExtractor,
-    RuleEngine, RiskEngine, GraphService
+    RuleEngine, RiskEngine, RiskFusionEngine, GraphService
 )
 from app.schemas.case import CaseResponse
 from app.schemas.analysis import (
-    AnalysisResponse, ParsedEmailData, EvidencePreservation
+    AnalysisResponse, ParsedEmailData, EvidencePreservation,
+    MLAnalysisData, SocialEngineeringProfile, RiskFusionBreakdown,
+    AnomalyResult, CampaignMatch
+)
+from ml.inference import (
+    EmailClassifierService, SocialEngineeringAnalyzer,
+    AnomalyDetectorService, CampaignSimilarityMatcher
 )
 
 router = APIRouter(prefix="/analyze", tags=["Analysis"])
@@ -46,7 +52,7 @@ def execute_full_forensic_pipeline(
     content_type: str,
     db: Session
 ) -> AnalysisResponse:
-    """Run the complete deterministic forensic intelligence pipeline on raw email bytes."""
+    """Run the complete deterministic forensic + AI/ML threat intelligence pipeline."""
     # 1. Forensic Evidence Preservation (SHA-256 & MD5)
     sha256_hash, md5_hash = compute_hashes(raw_bytes)
     file_size = len(raw_bytes)
@@ -85,27 +91,81 @@ def execute_full_forensic_pipeline(
     # 8. Extract Standardized IOCs
     iocs = IndicatorExtractor.extract_all(parsed_email, ip_intel, domain_intel)
 
-    # 9. Rule Engine Evaluation (Deterministic Triggers)
+    # 9. Phase 1 Rule Engine Evaluation (Deterministic Triggers)
     rule_eval = RuleEngine.evaluate(parsed_email, all_header_findings, domain_intel, ip_intel)
+    forensic_threat_assessment = RiskEngine.calculate_score(rule_eval)
 
-    # 10. Explainable Risk Score Calculation
-    threat_assessment = RiskEngine.calculate_score(rule_eval)
+    # 10. Phase 2 AI/ML Threat Detection & Social Engineering Profiling
+    ml_pred = EmailClassifierService.predict(
+        subject=parsed_email.subject,
+        body_text=parsed_email.body_text,
+        body_html=parsed_email.body_html
+    )
 
-    # 11. Build Attack / Infrastructure Relationship Graph
+    social_eng = SocialEngineeringAnalyzer.analyze(
+        subject=parsed_email.subject,
+        body_text=parsed_email.body_text,
+        body_html=parsed_email.body_html
+    )
+
+    # 11. Anomaly Detection
+    anomaly_res = AnomalyDetectorService.evaluate(
+        text_len=len(parsed_email.body_text),
+        url_count=len(parsed_email.urls),
+        attachment_count=len(parsed_email.attachments),
+        recipient_count=len(parsed_email.recipients_to) + len(parsed_email.recipients_cc),
+        relay_count=len(relay_hops),
+        urgency_score=social_eng.get("urgency", 0.0),
+        financial_score=social_eng.get("financial_pressure", 0.0)
+    )
+
+    # 12. Campaign & Historical Case Similarity
+    # Fetch recent past cases for similarity
+    past_cases = db.query(Case).order_by(Case.created_at.desc()).limit(10).all()
+    past_cases_meta = [
+        {
+            "case_id": c.id,
+            "subject": getattr(c, "filename", ""),
+            "classification": getattr(c, "classification", "")
+        }
+        for c in past_cases
+    ]
+
+    campaign_matches = CampaignSimilarityMatcher.match_campaigns(
+        subject=parsed_email.subject,
+        body_text=parsed_email.body_text,
+        body_html=parsed_email.body_html,
+        past_cases=past_cases_meta
+    )
+
+    # 13. Multi-Layer Risk Fusion
+    fusion_result = RiskFusionEngine.fuse(
+        forensic_assessment=forensic_threat_assessment,
+        ml_prediction=ml_pred,
+        social_eng=social_eng,
+        ip_intel=ip_intel,
+        domain_intel=domain_intel,
+        anomaly_res=anomaly_res
+    )
+
+    final_threat_assessment = fusion_result["threat"]
+    fusion_breakdown = fusion_result["fusion"]
+
+    # 14. Build Attack / Infrastructure Relationship Graph
     graph = GraphService.build_graph(parsed_email, ip_intel, domain_intel)
 
-    # 12. Persist Database Records
+    # 15. Persist Database Records
     db_case = Case(
         id=case_id,
         filename=filename,
         file_size_bytes=file_size,
         sha256_hash=sha256_hash,
         evidence_path=evidence_path,
-        threat_score=threat_assessment.score,
-        severity=threat_assessment.severity,
-        classification=threat_assessment.classification,
+        threat_score=final_threat_assessment.score,
+        severity=final_threat_assessment.severity,
+        classification=final_threat_assessment.classification,
         status=CaseStatus.NEW.value,
-        notes=threat_assessment.summary
+        notes=final_threat_assessment.summary
     )
     db.add(db_case)
 
@@ -179,7 +239,7 @@ def execute_full_forensic_pipeline(
     return AnalysisResponse(
         case=CaseResponse.model_validate(db_case),
         email=parsed_email,
-        threat=threat_assessment,
+        threat=final_threat_assessment,
         authentication=parsed_email.authentication,
         header_findings=all_header_findings,
         relay_path=relay_hops,
@@ -188,10 +248,15 @@ def execute_full_forensic_pipeline(
         urls=parsed_email.urls,
         attachments=parsed_email.attachments,
         iocs=iocs,
-        risk_factors=threat_assessment.factors,
+        risk_factors=final_threat_assessment.factors,
         timeline=timeline,
         graph=graph,
-        evidence=evidence_preservation
+        evidence=evidence_preservation,
+        ml_analysis=MLAnalysisData.model_validate(ml_pred),
+        social_engineering=SocialEngineeringProfile.model_validate(social_eng),
+        risk_fusion=RiskFusionBreakdown.model_validate(fusion_breakdown),
+        anomaly_detection=AnomalyResult.model_validate(anomaly_res),
+        campaign_matches=[CampaignMatch.model_validate(cm) for cm in campaign_matches]
     )
 
 

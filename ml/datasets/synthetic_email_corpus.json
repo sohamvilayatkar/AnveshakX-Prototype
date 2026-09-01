@@ -1,0 +1,97 @@
+[
+  {
+    "subject": "Sprint Planning and Quarterly Goals Review",
+    "body": "Hi Team,\n\nPlease review the attached sprint backlog before tomorrow's planning session. We will go over story points, delivery milestones, and team availability on our internal wiki.\n\nBest regards,\nAlice Roberts\nEngineering Team Lead",
+    "label": "legitimate"
+  },
+  {
+    "subject": "Weekly Project Status Report - Project Apollo",
+    "body": "Hello Everyone,\n\nAttached is the weekly status report for Project Apollo. The backend migration to PostgreSQL is on schedule, and QA testing will begin on Monday. Let me know if you have any blockers.\n\nThanks,\nMichael Chang\nTechnical Program Manager",
+    "label": "legitimate"
+  },
+  {
+    "subject": "HR Benefits Enrollment Window Reminder",
+    "body": "Dear Employee,\n\nThis is a friendly reminder that the open enrollment period for corporate health benefits closes next Friday at 5:00 PM. Please visit the employee portal to review or update your healthcare selections.\n\nSincerely,\nHuman Resources Department",
+    "label": "legitimate"
+  },
+  {
+    "subject": "Code Review Request: Feature/Auth-Refactor",
+    "body": "Hey Alex,\n\nCould you take a look at pull request #342 when you get a chance? It refactors the JWT token validation middleware and adds unit test coverage. No rush, whenever you are free today.\n\nCheers,\nDavid",
+    "label": "legitimate"
+  },
+  {
+    "subject": "Meeting Agenda: Customer Success Sync",
+    "body": "Hi all,\n\nHere is our agenda for the sync this afternoon:\n1. Q3 customer retention metrics\n2. Onboarding feedback from enterprise clients\n3. Action items from last week\n\nSee you in Conference Room 3B.\nBest,\nSarah",
+    "label": "legitimate"
+  },
+  {
+    "subject": "URGENT & CONFIDENTIAL: Acquisition Wire Transfer Payment Required",
+    "body": "Finance Team,\n\nI am currently in an all-day confidential executive board acquisition meeting with restricted phone connectivity.\nWe have a time-sensitive closing payment of $148,500 due before end of business today to secure the vendor acquisition. Please confirm once you receive this so I can provide the updated beneficiary bank account wire instructions immediately.\nTreat this transaction with utmost confidentiality and execute without delay. Do not call my office line as I cannot answer during the closed session. Reply directly to this email.\n\nRegards,\nDavid Miller\nChief Executive Officer",
+    "label": "bec"
+  },
+  {
+    "subject": "Urgent Request: Wire Transfer Payment for Vendor Settlement",
+    "body": "Hello Accounting,\n\nPlease process an urgent wire transfer of $86,400 for our strategic supplier settlement before the international banking cutoff at 3 PM.\nI will email the updated bank account details directly. Keep this matter confidential between us until the contract signing is completed tomorrow.\n\nThanks,\nCEO Office",
+    "label": "bec"
+  },
+  {
+    "subject": "Confidential Request from Executive Office",
+    "body": "Are you at your desk right now? I need you to execute a quick and confidential financial task for our executive team. Do not discuss this with anyone until completed. Reply to me here immediately as I am in a closed conference.\n\nBest regards,\nManaging Director",
+    "label": "bec"
+  },
+  {
+    "subject": "URGENT: Executive Wire Transfer Authorization",
+    "body": "Good morning,\n\nWe need to urgently wire $215,000 to our international acquisition escrow account today. Please find the transfer paperwork pending authorization. Confirm receipt so I can send the beneficiary routing number immediately. Time is critical.\n\nRegards,\nChief Executive",
+    "label": "bec"
+  },
+  {
+    "subject": "CRITICAL NOTICE: Your Online Banking Access Has Been Suspended",
+    "body": "Dear Valued Customer,\n\nWe detected unauthorized login attempts to your corporate banking account from an unrecognized IP address (194.26.29.112).\nTo safeguard your funds, your access has been temporarily restricted. You must verify your credentials and update your security questions within 24 hours to prevent permanent account deactivation.\nClick here to verify your account immediately: http://sbi-secure-portal-verify.xyz/login/auth-session\n\nSecurity Operations Team",
+    "label": "phishing"
+  },
+  {
+    "subject": "Urgent Security Alert: Mailbox Storage Exceeded - Immediate Action",
+    "body": "Warning: Your email account has exceeded its allocated cloud storage quota and will be deactivated within 12 hours. Incoming messages are currently being queued on our server.\nTo prevent loss of emails, please verify your mailbox credentials and upgrade your quota now at https://portal-webmail-update.top/auth/login.\n\nIT Support Desk",
+    "label": "phishing"
+  },
+  {
+    "subject": "Security Alert: Unusual Sign-In Activity Detected",
+    "body": "We noticed a sign-in from a new device in Moscow, Russia on your Microsoft 365 account.\nIf this was not you, your account has been compromised. Re-authenticate and change your password immediately through our secure verification link: https://micros0ft-account-verify.xyz/security-checkpoint\n\nMicrosoft Security Center",
+    "label": "phishing"
+  },
+  {
+    "subject": "ACTION REQUIRED: Your Corporate Account Will Be Terminated",
+    "body": "Attention Employee,\n\nYour Single Sign-On (SSO) certificate expired today. Failure to renew within 6 hours will lead to permanent account suspension and loss of network access. Click the portal link below to confirm your password and identity.\n\nCorporate Identity Management",
+    "label": "phishing"
+  },
+  {
+    "subject": "Action Required: Microsoft 365 Password Expiration Notice",
+    "body": "Dear User,\n\nYour corporate Microsoft 365 account password expires today. To keep your current password and prevent email lockout, verify your credentials here: https://login-microsoftonline-verify.club/m365/auth.\n\nCloud Administrator Team",
+    "label": "credential_theft"
+  },
+  {
+    "subject": "Important: Two-Factor Authentication (2FA) Re-Verification Required",
+    "body": "Your multi-factor authentication token requires immediate synchronization due to a recent infrastructure update. Enter your username, current password, and 6-digit MFA authenticator code to prevent account lockout.\n\nInformation Security Department",
+    "label": "credential_theft"
+  },
+  {
+    "subject": "Urgent: Webmail Server Upgrade - Confirm Login Credentials",
+    "body": "All employees must validate their webmail login details to migrate their inbox to the new high-speed server. Failure to log in will result in immediate mailbox termination.\n\nHelpdesk Administration",
+    "label": "credential_theft"
+  },
+  {
+    "subject": "Updated Bank Account Wire Instructions - Invoice #INV-98210",
+    "body": "Dear Accounts Payable,\n\nPlease note that our bank account details have changed due to our annual banking audit. For all pending and future invoice payments, please wire funds exclusively to our new beneficiary account listed below:\nBank: Offshore Commercial Trust\nAccount Number: 9871-2094-1182\nRouting/SWIFT: OCTRUS33\nDo not use our previous banking details.\n\nSincerely,\nSupplier Billing Department",
+    "label": "financial_fraud"
+  },
+  {
+    "subject": "Overdue Invoice Notice #INV-88219 - Direct Wire Remittance Required",
+    "body": "Dear Customer,\n\nYour account has an overdue balance of $47,850 for consulting services rendered in Q2. Please find attached the updated payment remittance slip. Wire the funds immediately to avoid late interest penalties and service termination.\n\nBilling Resolution Services",
+    "label": "financial_fraud"
+  },
+  {
+    "subject": "Urgent: Direct Deposit Payroll Account Change Request",
+    "body": "Hi Payroll,\n\nI recently switched banks and need to update my direct deposit account for the upcoming payroll cycle starting this Friday. Please update my routing and account number to the attached details. Let me know when this is confirmed.\n\nThank you,\nExecutive Staff",
+    "label": "financial_fraud"
+  }
+]

@@ -8,6 +8,7 @@ from app.services.impersonation_detector import ImpersonationDetector
 from app.services.indicator_extractor import IndicatorExtractor
 from app.services.rule_engine import RuleEngine
 from app.services.risk_engine import RiskEngine
+from app.services.risk_fusion import RiskFusionEngine
 from app.services.graph_service import GraphService
 from app.services.report_service import ReportService
 
@@ -22,6 +23,7 @@ __all__ = [
     "IndicatorExtractor",
     "RuleEngine",
     "RiskEngine",
+    "RiskFusionEngine",
     "GraphService",
     "ReportService"
 ]

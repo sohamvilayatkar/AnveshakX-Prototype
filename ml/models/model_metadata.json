@@ -1,0 +1,18 @@
+{
+  "model_name": "anveshakx-email-classifier",
+  "model_version": "v2.0",
+  "algorithm": "TF-IDF (1-2 ngrams) + Calibrated Logistic Regression",
+  "training_timestamp": "2026-09-01T15:22:13.926546+00:00",
+  "total_samples": 19,
+  "classes": [
+    "bec",
+    "credential_theft",
+    "financial_fraud",
+    "legitimate",
+    "phishing"
+  ],
+  "metrics": {
+    "accuracy": 1.0,
+    "macro_avg_f1": 1.0
+  }
+}

@@ -31,6 +31,13 @@ class Settings(BaseSettings):
     DOMAIN_INTELLIGENCE_ENABLED: bool = False
     DOMAIN_INTELLIGENCE_API_KEY: str = ""
 
+    # Phase 2 Machine Learning & Risk Fusion Settings
+    ML_ENABLED: bool = True
+    DEMO_MODE: bool = False
+    FORENSIC_WEIGHT: float = 0.50
+    ML_WEIGHT: float = 0.30
+    INTEL_WEIGHT: float = 0.20
+
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
